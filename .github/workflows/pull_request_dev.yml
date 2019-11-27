@@ -1,0 +1,42 @@
+on:
+  pull_request:
+    paths:
+      - 'dev/*'
+    types: [opened, synchronize, rerequested]
+name: dev-test
+jobs:
+  format-validate-plan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - name: terraform-fmt-dev
+      uses: hashicorp/terraform-github-actions/fmt@v0.4.4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TF_ACTION_WORKING_DIR: ./dev
+    - name: terraform-init-dev
+      uses: hashicorp/terraform-github-actions/init@v0.4.4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TF_ACTION_WORKING_DIR: ./dev
+        ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+    - name: terraform-validate-dev
+      uses: hashicorp/terraform-github-actions/validate@v0.4.4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TF_ACTION_WORKING_DIR: ./dev
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+    - name: terraform-plan-dev
+      uses: hashicorp/terraform-github-actions/plan@v0.4.4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TF_ACTION_WORKING_DIR: ./dev
+        TF_ACTION_WORKSPACE: default
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
